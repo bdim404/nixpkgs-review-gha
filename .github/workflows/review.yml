@@ -299,12 +299,12 @@ jobs:
 
       - name: post comment
         if: ${{ inputs.post-result }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           if [[ -n "$GH_TOKEN" ]]; then
             gh pr -R NixOS/nixpkgs comment ${PR_NUMBER} -F report.md
           fi
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: approve pull request
         if: ${{ inputs.approve-on-success && needs.report.outputs.success == 'true' }}
