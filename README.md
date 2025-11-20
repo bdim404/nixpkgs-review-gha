@@ -8,7 +8,7 @@ Run [nixpkgs-review](https://github.com/Mic92/nixpkgs-review) in GitHub Actions
 - Automatically post results on the reviewed pull request
 - Optionally start an [Upterm](https://upterm.dev/) session after nixpkgs-review has finished to allow interactive testing/debugging via SSH
 - Push new packages to an [Attic](https://github.com/zhaofengli/attic) or [Cachix](https://www.cachix.org/) cache
-- Automatically approve pull requests on review success
+- After a successful review, automatically mark the PR as ready for review, approve it, or merge it (directly or via the [nixpkgs-merge-bot](https://github.com/NixOS/nixpkgs-merge-bot))
 - Add a "Run nixpkgs-review" shortcut to pull request pages in nixpkgs
 
 ## Setup
@@ -16,8 +16,8 @@ Run [nixpkgs-review](https://github.com/Mic92/nixpkgs-review) in GitHub Actions
 2. In your fork, go to the [Actions](../../actions) tab and enable GitHub Actions workflows.
 3. If you don't want to set up [automatic self-updates](#automatic-self-updates-optional), please disable the `self-update` workflow ([Actions / `self-update`](../../actions/workflows/self-update.yml) > `...` button (top right corner) > `Disable workflow`).
 
-### Post Results / Auto Approve (optional)
-If you want nixpkgs-review-gha to automatically post the results on the reviewed pull requests or automatically approve them, you need to generate a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens):
+### Post Results / Auto Approve/Merge (optional)
+If you want nixpkgs-review-gha to automatically post the results on the reviewed pull requests or automatically mark them as ready for review or approve/merge them, you need to generate a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens):
 
 1. Go to <https://github.com/settings/tokens> and generate a new **classic** token with the `public_repo` scope.
 2. In your fork, go to "Settings" > "Secrets and variables" > "Actions" and [add a new repository secret](../../settings/secrets/actions/new) with the name `GH_TOKEN` and set its value to the personal access token you generated before.
@@ -42,6 +42,15 @@ Follow these steps if you want nixpkgs-review-gha to push new packages to a [Cac
 1. Go to https://app.cachix.org/ and set up your binary cache.
 2. [Create a new variable](../../settings/variables/actions/new) with the name `CACHIX_CACHE` and set it to the name of your Cachix cache.
 3. [Create a new secret](../../settings/secrets/actions/new) with the name `CACHIX_AUTH_TOKEN` and set its value to your auth token. If you are using a self-signed cache, you also need to create a `CACHIX_SIGNING_KEY` secret and set its value to your private signing key.
+
+### Extra Nix Config (optional)
+If you have additional configuration you want to append to `/etc/nix/nix.conf`, you can [create a new variable](../../settings/variables/actions/new) with the name `EXTRA_NIX_CONFIG`.
+For example, if you want to configure nix to use additional substituters, set its value to the following:
+
+```
+extra-substituters = https://nix-community.cachix.org
+extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
+```
 
 ### Shortcuts on nixpkgs PR pages (optional)
 Add [`shortcut.js`](shortcut.js) as a user script in your browser for `https://github.com/` for example using the [User JavaScript and CSS chrome extension](https://chromewebstore.google.com/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld) or [Violentmonkey](https://violentmonkey.github.io/). Don't forget to update the `repo` constant at the top of the file to point to your fork.
